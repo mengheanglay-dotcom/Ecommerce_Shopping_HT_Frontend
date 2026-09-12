@@ -1,0 +1,357 @@
+export const Women_Product = [
+  // ================= WOMEN PRODUCTS =================
+  {
+    id: 33,
+    name: "Floral Summer Dress",
+    type: "Women",
+    gender: "women",
+    category: "dresses",
+    price: 24.99,
+    image: "https://i.pinimg.com/1200x/c5/97/c1/c597c174d7bd6152e850ab040bc83de8.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.6, count: 140 }
+  },
+  {
+    id: 34,
+    name: "Casual Hoodie",
+    type: "Women",
+    gender: "women",
+    category: "hoodies",
+    price: 19.99,
+    image: "https://i.pinimg.com/1200x/bc/69/92/bc6992ad9cda9ed56cbffc2aee2c2913.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.4, count: 95 }
+  },
+  {
+    id: 35,
+    name: "Skinny Blue Jeans",
+    type: "Women",
+    gender: "women",
+    category: "jeans",
+    price: 29.99,
+    image: "https://i.pinimg.com/1200x/21/41/43/21414344cbb5c38b8b52e845142286dc.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.7, count: 200 }
+  },
+  {
+    id: 36,
+    name: "Denim Shorts",
+    type: "Women",
+    gender: "women",
+    category: "shorts",
+    price: 15.99,
+    image: "https://i.pinimg.com/736x/84/3b/b1/843bb1713961388f2d7e35f14d5b4b1b.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.3, count: 80 }
+  },
+  {
+    id: 37,
+    name: "Elegant Evening Dress",
+    type: "Women",
+    gender: "women",
+    category: "dresses",
+    price: 39.99,
+    image: "https://i.pinimg.com/1200x/11/1e/12/111e12ede388fc4eae2dd965448ef216.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.8, count: 210 }
+  },
+  {
+    id: 38,
+    name: "Oversized Hoodie",
+    type: "Women",
+    gender: "women",
+    category: "hoodies",
+    price: 22.5,
+    image: "https://i.pinimg.com/736x/de/e8/03/dee8035fee0ba946b2ea83de50e8a0ac.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.5, count: 130 }
+  },
+  {
+    id: 39,
+    name: "High Waist Jeans",
+    type: "Women",
+    gender: "women",
+    category: "jeans",
+    price: 32.0,
+    image: "https://i.pinimg.com/1200x/08/c0/57/08c057338080d1ff3c7a20370addd6f3.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.6, count: 175 }
+  },
+  {
+    id: 40,
+    name: "Sporty Shorts",
+    type: "Women",
+    gender: "women",
+    category: "shorts",
+    price: 14.99,
+    image: "https://i.pinimg.com/1200x/b3/cb/45/b3cb45f33b5ad2879e7ed86a45cad0a6.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.2, count: 70 }
+  },
+  {
+    id: 41,
+    name: "Boho Maxi Dress",
+    type: "Women",
+    gender: "women",
+    category: "dresses",
+    price: 34.99,
+    image: "https://i.pinimg.com/1200x/ba/f9/6f/baf96fd4c6d85ca0bbc6ba2996465c48.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.7, count: 160 }
+  },
+  {
+    id: 42,
+    name: "Zip-Up Hoodie",
+    type: "Women",
+    gender: "women",
+    category: "hoodies",
+    price: 25.99,
+    image: "https://i.pinimg.com/1200x/13/20/35/13203541cee02801d3b085690f2120c0.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.4, count: 110 }
+  },
+  {
+    id: 44,
+    name: "Ripped Jeans",
+    type: "Women",
+    gender: "women",
+    category: "jeans",
+    price: 28.99,
+    image: "https://i.pinimg.com/1200x/46/89/0d/46890d615c066be2ede7fd58abffe3dd.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.5, count: 150 }
+  },
+  {
+    id: 45,
+    name: "Casual Cotton Shorts",
+    type: "Women",
+    gender: "women",
+    category: "shorts",
+    price: 13.5,
+    image: "https://i.pinimg.com/1200x/79/8b/a2/798ba21b7915c8b780285ee0890df9db.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.1, count: 65 }
+  },
+  {
+    id: 46,
+    name: "Bodycon Dress",
+    type: "Women",
+    gender: "women",
+    category: "dresses",
+    price: 27.99,
+    image: "https://i.pinimg.com/1200x/db/3a/1a/db3a1a6a9ab3dc5ff53be104488a4668.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.6, count: 140 }
+  },
+  {
+    id: 47,
+    name: "Fleece Hoodie",
+    type: "Women",
+    gender: "women",
+    category: "hoodies",
+    price: 26.99,
+    image: "https://i.pinimg.com/1200x/28/d4/70/28d470021d49c4a3e5bef4946e6cd819.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.5, count: 120 }
+  },
+  {
+    id: 48,
+    name: "Straight Leg Jeans",
+    type: "Women",
+    gender: "women",
+    category: "jeans",
+    price: 30.99,
+    image: "https://i.pinimg.com/1200x/48/1e/96/481e96862527cd2f9b196cce0ed40a11.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.6, count: 180 }
+  },
+  {
+    id: 49,
+    name: "Running Shorts",
+    type: "Women",
+    gender: "women",
+    category: "shorts",
+    price: 12.99,
+    image: "https://i.pinimg.com/736x/96/76/d1/9676d18d868a7bd4e25c68de2d25f634.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.3, count: 90 }
+  },
+  {
+    id: 50,
+    name: "Chiffon Dress",
+    type: "Women",
+    gender: "women",
+    category: "dresses",
+    price: 36.99,
+    image: "https://i.pinimg.com/736x/25/1a/ae/251aae7a993bb256f704b3fbbded4683.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.7, count: 155 }
+  },
+  {
+    id: 51,
+    name: "Crop Hoodie",
+    type: "Women",
+    gender: "women",
+    category: "hoodies",
+    price: 21.99,
+    image: "https://i.pinimg.com/736x/a3/1e/28/a31e289e03babdb69e80ee546ef81671.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.4, count: 100 }
+  },
+  {
+    id: 51,
+    name: "Mom Jeans",
+    type: "Women",
+    gender: "women",
+    category: "jeans",
+    price: 31.5,
+    image: "https://i.pinimg.com/1200x/cd/ad/38/cdad389875d25e0714fa6899f91c7f18.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.6, count: 165 }
+  },
+  {
+    id: 53,
+    name: "Linen Shorts",
+    type: "Women",
+    gender: "women",
+    category: "shorts",
+    price: 16.99,
+    image: "https://i.pinimg.com/1200x/5a/3c/ed/5a3ced54ea0b2fb7217bab3476b7782e.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.2, count: 85 }
+  },
+  // ================= SHOES =================
+
+  {
+    id: 54,
+    name: "Rhinestone Strappy Heels",
+    type: "Women",
+    gender: "women",
+    category: "heels",
+    price: 85,
+    image: "https://i.pinimg.com/736x/2b/d2/bd/2bd2bd721e388fb3f8bce1566ce3a635.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.6, count: 120 }
+  },
+  {
+    id: 55,
+    name: "Gold Minimalist Sandals",
+    type: "Women",
+    gender: "women",
+    category: "sandals",
+    price: 70,
+    image: "https://i.pinimg.com/736x/07/f1/41/07f141e19f5ed8265210895404e42893.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.4, count: 95 }
+  },
+  {
+    id: 56,
+    name: "Transparent Glass Heels",
+    type: "Women",
+    gender: "women",
+    category: "heels",
+    price: 90,
+    image: "https://i.pinimg.com/736x/f5/1a/7e/f51a7ee953c9d06513454cccf54f51a3.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.7, count: 150 }
+  },
+  {
+    id: 58,
+    name: "Platform Party Heels",
+    type: "Women",
+    gender: "women",
+    category: "heels",
+    price: 110,
+    image: "https://i.pinimg.com/webp/1200x/fc/da/38/fcda3854100f1eff2d171f82a9a09b79.webp",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.8, count: 200 }
+  },
+  {
+    id: 59,
+    name: "Strappy Beach Sandals",
+    type: "Women",
+    gender: "women",
+    category: "sandals",
+    price: 35,
+    image: "https://i.pinimg.com/webp/736x/4e/f8/40/4ef840479385945ef4052e0fa56ba431.webp",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.3, count: 80 }
+  },
+  {
+    id: 60,
+    name: "Slide 44at Sandals",
+    type: "Women",
+    gender: "women",
+    category: "sandals",
+    price: 30,
+    image: "https://i.pinimg.com/1200x/df/90/5e/df905e088798f6d789c7abb1bf2198b7.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.2, count: 60 }
+  },
+  {
+    id: 61,
+    name: "Espadrille Wedge Sandals",
+    type: "Women",
+    gender: "women",
+    category: "heels",
+    price: 60,
+    image: "https://i.pinimg.com/736x/43/db/bb/43dbbb6c75320728725bd6486128e1a3.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.5, count: 110 }
+  },
+  {
+    id: 62,
+    name: "Toe-Ring Flat Sandals",
+    type: "Women",
+    gender: "women",
+    category: "sandals",
+    price: 40,
+    image: "https://i.pinimg.com/736x/c1/e9/60/c1e960bedef5df8515239e6ad55817dc.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.3, count: 75 }
+  },
+  {
+    id: 63,
+    name: "Slingback Elegant Heels",
+    type: "Women",
+    gender: "women",
+    category: "heels",
+    price: 75,
+    image: "https://i.pinimg.com/webp/736x/af/cd/84/afcd8467bd04fd3aafe69343af1082b7.webp",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.6, count: 130 }
+  },
+  {
+    id: 64,
+    name: "Beaded Boho Sandals",
+    type: "Women",
+    gender: "women",
+    category: "sandals",
+    price: 25,
+    image: "https://i.pinimg.com/1200x/2b/8f/ff/2b8ffff7e3cec4886767c31a5e2ec5c1.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.1, count: 55 }
+  },
+  {
+    id: 65,
+    name: "Kitten Heel Sandals",
+    type: "Women",
+    gender: "women",
+    category: "heels",
+    price: 65,
+    image: "https://i.pinimg.com/webp/1200x/ad/c3/de/adc3de0eef645a0a4d782a4af8df2800.webp",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.4, count: 100 }
+  },
+  {
+    id: 66,
+    name: "Chunky Sole Sneakers",
+    type: "Women",
+    gender: "women",
+    category: "sneakers",
+    price: 80,
+    image: "https://i.pinimg.com/1200x/ae/36/d9/ae36d9855487d3580d7f980fd6a7a159.jpg",
+    sizes: ["S", "M", "L", "XL"],
+    rating: { rate: 4.5, count: 140 }
+  }
+];

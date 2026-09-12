@@ -1,0 +1,11 @@
+export default function SectionHeading({ eyebrow, title, action }) {
+  return (
+    <div className="admin-section-heading">
+      <div>
+        <span>{eyebrow}</span>
+        <h2>{title}</h2>
+      </div>
+      {action}
+    </div>
+  );
+}
