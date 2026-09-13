@@ -49,12 +49,15 @@ export const getProducts = async () => {
 };
 
 export const createProduct = async (product) => {
-  const response = await api.post("/products", toProductPayload(product));
+  const response = await api.post("/admin/products", toProductPayload(product));
   return normalizeProduct(response.data.data || response.data);
 };
 
 export const updateProduct = async (id, product) => {
-  const response = await api.put(`/products/${id}`, toProductPayload(product));
+  const response = await api.put(
+    `/admin/products/${id}`,
+    toProductPayload(product),
+  );
   return normalizeProduct(response.data.data || response.data);
 };
 
@@ -70,7 +73,7 @@ const toProductPayload = (product) => ({
 });
 
 export const deleteProduct = async (id) => {
-  await api.delete(`/products/${id}`);
+  await api.delete(`/admin/products/${id}`);
 };
 
 export const getProductById = async (id) => {

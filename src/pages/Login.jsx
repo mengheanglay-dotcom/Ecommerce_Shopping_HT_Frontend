@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../api/authApi";
+import { isAdminUser, login } from "../api/authApi";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export default function Login() {
     try {
       const result = await login(form);
       const user = result.user;
-      navigate(user?.is_admin || user?.role === "admin" ? "/admin" : "/");
+      navigate(isAdminUser(user) ? "/admin" : "/");
       window.dispatchEvent(new Event("authchange"));
     } catch (err) {
       setError(

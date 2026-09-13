@@ -1,4 +1,4 @@
-import { FiSearch, FiSettings, FiStar, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiSearch, FiSettings, FiTrash2, FiPlus } from "react-icons/fi";
 import SectionHeading from "../components/SectionHeading";
 
 export default function ProductsSection({
@@ -52,24 +52,57 @@ export default function ProductsSection({
           <>
             <div className="admin-table-head">
               <span>Product</span>
-              <span>Category</span>
+              <span>Catalog</span>
+              <span>Inventory</span>
               <span>Price</span>
-              <span>Rating</span>
+              <span>Status</span>
               <span>Actions</span>
             </div>
             {products.map((product) => (
-              <div className="admin-table-row" key={product.id}>
+              <div className="admin-table-row admin-product-row" key={product.id}>
+                {(() => {
+                  const totalStock = (product.variants || []).reduce(
+                    (total, variant) => total + Number(variant.stock || 0),
+                    0,
+                  );
+                  const isActive = product.status === "active" && totalStock > 0;
+                  return (
+                    <>
                 <div className="admin-product-cell">
-                  <img src={product.image} alt="" />
+                  <img src={product.image} alt="" loading="lazy" />
                   <div>
                     <strong>{product.name}</strong>
-                    <span>SKU-{String(product.id).padStart(4, "0")}</span>
+                    <span>{product.code || `Product #${product.id}`}</span>
+                    <small>{product.brand?.name || "No brand"}</small>
                   </div>
                 </div>
-                <span className="admin-muted">{product.category}</span>
-                <strong>${Number(product.price).toFixed(2)}</strong>
-                <span className="admin-rating">
-                  <FiStar /> {product.rating?.rate || "New"}
+                <div className="admin-product-catalog">
+                  <strong>{product.category || "Uncategorized"}</strong>
+                  <span>
+                    {product.gender ||
+                      product.category?.parent?.name}
+                  </span>
+                </div>
+                <div className="admin-product-inventory">
+                  <strong>{product.variants?.length || 0} variants</strong>
+                  <span>
+                    {product.variants?.reduce(
+                      (total, variant) => total + Number(variant.stock || 0),
+                      0,
+                    ) || 0}{" "}
+                    units
+                  </span>
+                </div>
+                <div className="admin-product-price">
+                  <strong>${Number(product.price || 0).toFixed(2)}</strong>
+                  {product.variants?.length > 1 && (
+                    <span>from variant prices</span>
+                  )}
+                </div>
+                <span
+                  className={`admin-product-status ${isActive ? "active" : "inactive"}`}
+                >
+                  {isActive ? "active" : "inactive"}
                 </span>
                 <div className="admin-actions">
                   <button onClick={() => onEdit(product)} title="Edit product">
@@ -82,6 +115,9 @@ export default function ProductsSection({
                     <FiTrash2 />
                   </button>
                 </div>
+                    </>
+                  );
+                })()}
               </div>
             ))}
             {products.length === 0 && (

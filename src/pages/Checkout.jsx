@@ -52,14 +52,18 @@ export default function Checkout() {
     setError("");
     try {
       await createOrder({
-        customer_name: form.name,
+        shipping_name: form.name,
         email: form.email,
-        phone: form.phone,
-        address: form.address,
+        shipping_phone: form.phone,
+        shipping_address: form.address,
         city: form.city,
         payment_method: form.payment_method,
         items: cart.map((x) => ({
-          product_id: x.product_id || x.product?.id || x.id,
+          product_variant_id:
+            x.variant_id ||
+            x.product_variant_id ||
+            x.product_variant?.id ||
+            x.variant?.id,
           quantity: x.qty || x.quantity || 1,
           size: x.size || null,
         })),

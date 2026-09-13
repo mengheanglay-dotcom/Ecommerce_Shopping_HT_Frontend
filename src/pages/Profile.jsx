@@ -1,12 +1,30 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  LogOut,
+  Package,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import {
   getCurrentUser,
   updateCurrentUser,
   logout,
   isAuthenticated,
   getStoredUser,
 } from "../api/authApi";
+
+const FIELDS = [
+  { key: "name", label: "Full name", icon: User, type: "text" },
+  { key: "email", label: "Email", icon: Mail, type: "email" },
+  { key: "phone", label: "Phone", icon: Phone, type: "text" },
+  { key: "address", label: "Address", icon: MapPin, type: "textarea" },
+];
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -21,6 +39,7 @@ export default function Profile() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
@@ -45,13 +64,14 @@ export default function Profile() {
           return;
         }
         setError(
-          "Unable to refresh profile. You can still edit your saved details.",
+          "Unable to refresh profile. You can still edit your saved details."
         );
       });
     return () => {
       active = false;
     };
   }, [navigate]);
+
   const save = async (e) => {
     e.preventDefault();
     setError("");
@@ -74,77 +94,105 @@ export default function Profile() {
       setSaving(false);
     }
   };
+
   const signout = async () => {
     await logout();
     window.dispatchEvent(new Event("authchange"));
     navigate("/");
   };
+
   if (!user)
     return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        Loading profile...
+      <div className="min-h-[70vh] flex items-center justify-center gap-2 text-neutral-500">
+        <Loader2 className="w-5 h-5 animate-spin" />
+        <span>Loading profile...</span>
       </div>
     );
+
+  const initials = (user.name || user.email || "?")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase())
+    .join("");
+
   return (
-    <main className="max-w-3xl mx-auto px-5 py-16">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <p className="text-xs tracking-[.25em] text-neutral-400 font-semibold">
-            ACCOUNT
-          </p>
-          <h1 className="text-4xl font-semibold mt-2">My profile</h1>
+    <main className="max-w-2xl mx-auto px-5 py-16">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center text-lg font-semibold shrink-0">
+            {initials}
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold leading-tight">
+              {user.name || "My profile"}
+            </h1>
+            <p className="text-sm text-neutral-500">{user.email}</p>
+          </div>
         </div>
         <button
           onClick={signout}
-          className="border rounded-full px-5 py-2 text-sm"
+          className="flex items-center gap-1.5 border rounded-full pl-4 pr-5 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
         >
+          <LogOut className="w-4 h-4" />
           Log out
         </button>
       </div>
+
+      {/* Feedback */}
       {message && (
-        <p className="mt-6 bg-green-50 text-green-700 p-3 rounded-lg text-sm">
-          {message}
-        </p>
+        <div className="mb-6 flex items-start gap-2 bg-green-50 text-green-700 p-3 rounded-lg text-sm">
+          <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+          <span>{message}</span>
+        </div>
       )}
       {error && (
-        <p className="mt-6 bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-          {error}
-        </p>
+        <div className="mb-6 flex items-start gap-2 bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+          <span>{error}</span>
+        </div>
       )}
-      <form onSubmit={save} className="mt-8 border rounded-2xl p-6 space-y-5">
-        {[
-          ["name", "Full name"],
-          ["email", "Email"],
-          ["phone", "Phone"],
-          ["address", "Address"],
-        ].map(([key, label]) => (
-          <label key={key} className="block text-sm font-medium">
+
+      {/* Form */}
+      <form onSubmit={save} className="border rounded-2xl p-6 space-y-5">
+        {FIELDS.map(({ key, label, icon: Icon, type }) => (
+          <label key={key} className="block text-sm font-medium text-neutral-800">
             {label}
-            {key === "address" ? (
-              <textarea
-                rows="4"
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="mt-1.5 w-full border rounded-lg px-3 py-2.5"
-              />
-            ) : (
-              <input
-                type={key === "email" ? "email" : "text"}
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="mt-1.5 w-full border rounded-lg px-3 py-2.5"
-              />
-            )}
+            <div className="relative mt-1.5">
+              <Icon className="w-4 h-4 text-neutral-400 absolute left-3 top-3.5" />
+              {type === "textarea" ? (
+                <textarea
+                  rows="3"
+                  value={form[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  className="w-full border rounded-lg pl-9 pr-3 py-2.5 text-sm font-normal focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-shadow"
+                />
+              ) : (
+                <input
+                  type={type}
+                  value={form[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  className="w-full border rounded-lg pl-9 pr-3 py-2.5 text-sm font-normal focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-shadow"
+                />
+              )}
+            </div>
           </label>
         ))}
-        <div className="flex gap-3">
+
+        <div className="flex gap-3 pt-1">
           <button
             disabled={saving}
-            className="bg-black text-white rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-50"
+            className="flex items-center gap-2 bg-black text-white rounded-full px-6 py-3 text-sm font-semibold disabled:opacity-50 hover:bg-neutral-800 transition-colors"
           >
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
             {saving ? "Saving..." : "Save changes"}
           </button>
-          <Link to="/orders" className="border rounded-full px-6 py-3 text-sm">
+          <Link
+            to="/orders"
+            className="flex items-center gap-2 border rounded-full px-6 py-3 text-sm font-medium hover:bg-neutral-50 transition-colors"
+          >
+            <Package className="w-4 h-4" />
             My orders
           </Link>
         </div>

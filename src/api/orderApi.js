@@ -7,7 +7,7 @@ const listFrom = (payload) => {
 };
 
 export const createOrder = async (order) =>
-  unwrap(await api.post("/orders", order));
+  unwrap(await api.post("/checkout", order));
 export const getMyOrders = async () =>
   listFrom(unwrap(await api.get("/orders")));
 export const getOrderById = async (id) =>

@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { FiUsers } from "react-icons/fi";
+import { FiSettings, FiTrash2, FiUsers } from "react-icons/fi";
 import SectionHeading from "../components/SectionHeading";
-import { getCustomers, deleteCustomer } from "../../../api/adminApi";
+import { getAdminUsers, updateAdminUser, deleteAdminUser } from "../../../api/adminApi";
 
 export default function CustomersSection() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const load = async () => {
     try {
-      setCustomers(await getCustomers());
+      setCustomers(await getAdminUsers());
     } catch (e) {
       setError(e.response?.data?.message || "Unable to load customers.");
     } finally {
@@ -22,10 +24,28 @@ export default function CustomersSection() {
   const remove = async (id) => {
     if (!window.confirm("Delete this customer?")) return;
     try {
-      await deleteCustomer(id);
+      await deleteAdminUser(id);
       await load();
     } catch (e) {
       setError(e.response?.data?.message || "Unable to delete customer");
+    }
+  };
+  const edit = (customer) => {
+    setEditing(customer);
+    setForm({
+      name: customer.name || "",
+      email: customer.email || "",
+      phone: customer.phone || "",
+    });
+  };
+  const save = async (event) => {
+    event.preventDefault();
+    try {
+      await updateAdminUser(editing.id, form);
+      setEditing(null);
+      await load();
+    } catch (e) {
+      setError(e.response?.data?.message || "Unable to update customer");
     }
   };
   return (
@@ -44,7 +64,43 @@ export default function CustomersSection() {
           {error}
         </div>
       )}
-      <div className="admin-panel admin-product-table">
+      {editing && (
+        <form className="admin-panel admin-customer-edit" onSubmit={save}>
+          <div className="admin-form-grid">
+            {["name", "email", "phone"].map((field) => (
+              <label key={field}>
+                {field[0].toUpperCase() + field.slice(1)}
+                <input
+                  value={form[field]}
+                  onChange={(event) =>
+                    setForm({ ...form, [field]: event.target.value })
+                  }
+                />
+              </label>
+            ))}
+          </div>
+          <div className="admin-modal-actions">
+            <button
+              type="button"
+              className="admin-secondary"
+              onClick={() => setEditing(null)}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="admin-primary">
+              Save customer
+            </button>
+          </div>
+        </form>
+      )}
+      <div className="admin-panel admin-product-table admin-customer-table">
+        <div className="admin-table-head admin-customer-table-head">
+          <span>Customer</span>
+          <span>Phone</span>
+          <span>Orders</span>
+          <span>Total spent</span>
+          <span>Actions</span>
+        </div>
         {loading ? (
           <div className="admin-empty">Loading customers...</div>
         ) : (
@@ -67,7 +123,12 @@ export default function CustomersSection() {
               <span>{c.orders_count ?? c.orders?.length ?? 0} orders</span>
               <strong>${Number(c.total_spent || 0).toFixed(2)}</strong>
               <div className="admin-actions">
-                <button onClick={() => remove(c.id)}>Delete</button>
+                <button onClick={() => edit(c)} title="Edit customer">
+                  <FiSettings />
+                </button>
+                <button onClick={() => remove(c.id)} title="Delete customer">
+                  <FiTrash2 />
+                </button>
               </div>
             </div>
           ))

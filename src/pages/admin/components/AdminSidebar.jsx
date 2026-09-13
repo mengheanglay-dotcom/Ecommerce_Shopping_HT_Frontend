@@ -18,9 +18,11 @@ const navItems = [
   { id: "customers", label: "Customers", icon: FiUsers },
   { id: "categories", label: "Categories", icon: FiLayers },
   { id: "brands", label: "Brands", icon: FiTag },
+  { id: "sizes", label: "Sizes", icon: FiLayers },
+  { id: "colors", label: "Colors", icon: FiTag },
 ];
 
-export default function AdminSidebar({ section, open, onSelect, onClose }) {
+export default function AdminSidebar({ section, open, onSelect, onClose, orderCount }) {
   return (
     <aside className={`admin-sidebar ${open ? "is-open" : ""}`}>
       <div className="admin-brand">
@@ -53,7 +55,7 @@ export default function AdminSidebar({ section, open, onSelect, onClose }) {
             >
               <Icon />
               <span>{item.label}</span>
-              {item.badge && <b>{item.badge}</b>}
+              {item.id === "orders" && orderCount > 0 && <b>{orderCount}</b>}
             </button>
           );
         })}

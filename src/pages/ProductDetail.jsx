@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { getProductById, getProducts } from "../api/productApi";
+import { getProductById, getProducts, getProductId } from "../api/productApi";
 import {
   getShopWishlist,
   toggleShopWishlist,
@@ -231,6 +231,7 @@ function ProductDetail() {
   }, []);
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState("");
+  const [selectedImage, setSelectedImage] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState("");
   const { toasts, addToast, removeToast } = useToast();
@@ -254,6 +255,11 @@ function ProductDetail() {
       const firstVariant = product.variants[0];
       setSelectedSize(firstVariant.size?.name || "M");
       setSelectedColor(firstVariant.color?.name || "");
+      setSelectedImage(
+        firstVariant.images?.[0] || firstVariant.image || product.image || "",
+      );
+    } else if (product) {
+      setSelectedImage(product.image || "");
     }
   }, [product]);
 
@@ -286,8 +292,13 @@ function ProductDetail() {
 
   const toggleWishlist = async (productToToggle = product) => {
     try {
-      const exists = wishlist.some((item) => item.id === productToToggle.id);
-      const next = await toggleShopWishlist(productToToggle, exists);
+      const productId = getProductId(productToToggle) || Number(id);
+      if (!Number.isInteger(productId) || productId <= 0) {
+        throw new Error("A valid product is required to add it to the wishlist.");
+      }
+      const wishlistProduct = { ...productToToggle, id: productId };
+      const exists = wishlist.some((item) => getProductId(item) === productId);
+      const next = await toggleShopWishlist(wishlistProduct, exists);
       setWishlist(next || []);
       addToast(
         exists ? "Removed from wishlist" : "Added to wishlist",
@@ -317,7 +328,11 @@ function ProductDetail() {
         sku: selectedVariant?.sku,
         variant_id: selectedVariant?.id,
         stock: selectedVariant?.stock,
-        image: selectedVariant?.image || product.image,
+        image:
+          selectedVariant?.images?.[0] ||
+          selectedVariant?.image ||
+          product.image,
+        images: selectedImages,
       };
       await addShopCart(cartItem, quantity, cartItem.size);
       window.dispatchEvent(new Event("storage"));
@@ -371,6 +386,12 @@ function ProductDetail() {
         variant.size?.name === selectedSize,
     ) || variants.find((variant) => variant.color?.name === colorName);
     setSelectedColor(matchingVariant?.color?.name || colorName);
+    setSelectedImage(
+      matchingVariant?.images?.[0] ||
+        matchingVariant?.image ||
+        product.image ||
+        "",
+    );
     if (matchingVariant?.size?.name) setSelectedSize(matchingVariant.size.name);
     if (matchingVariant?.stock !== undefined)
       setQuantity((current) =>
@@ -385,6 +406,12 @@ function ProductDetail() {
     ) || variants.find((variant) => variant.size?.name === sizeName);
     setSelectedSize(matchingVariant?.size?.name || sizeName);
     if (matchingVariant?.color?.name) setSelectedColor(matchingVariant.color.name);
+    setSelectedImage(
+      matchingVariant?.images?.[0] ||
+        matchingVariant?.image ||
+        product.image ||
+        "",
+    );
     if (matchingVariant?.stock !== undefined)
       setQuantity((current) =>
         Math.min(current, Math.max(0, Number(matchingVariant.stock))),
@@ -392,19 +419,46 @@ function ProductDetail() {
   };
   const price = Number(selectedVariant?.price ?? product.price ?? 0);
   const stock = Number(selectedVariant?.stock);
-  const isWishlisted = wishlist.some((item) => item.id === product.id);
+  const productId = getProductId(product) || Number(id);
+  const isWishlisted = wishlist.some((item) => getProductId(item) === productId);
+  const selectedImages =
+    selectedVariant?.images?.length
+      ? selectedVariant.images
+      : selectedVariant?.image
+        ? [selectedVariant.image]
+        : [product.image].filter(Boolean);
 
   return (
     <>
       <ToastContainer toasts={toasts} removeToast={removeToast} />
       <main className="mx-auto mt-20 max-w-7xl px-6 py-10">
         <div className="grid gap-10 md:grid-cols-2">
-          <div className="overflow-hidden rounded-2xl bg-neutral-100">
+          <div>
+            <div className="overflow-hidden rounded-2xl bg-neutral-100">
             <img
-              src={product.image}
+              src={selectedImage || selectedImages[0]}
               alt={product.name}
               className="aspect-4/5 h-full w-full object-cover"
             />
+            </div>
+            {selectedImages.length > 1 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto">
+                {selectedImages.map((image) => (
+                  <button
+                    type="button"
+                    key={image}
+                    onClick={() => setSelectedImage(image)}
+                    className={`h-16 w-16 shrink-0 overflow-hidden rounded border ${
+                      (selectedImage || selectedImages[0]) === image
+                        ? "border-black"
+                        : "border-neutral-200"
+                    }`}
+                  >
+                    <img src={image} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div>
             <div className="flex items-center gap-3 text-sm text-neutral-500">
@@ -457,7 +511,21 @@ function ProductDetail() {
                     >
                       <span
                         className="block h-full w-full rounded-full border border-black/15"
-                        style={{ backgroundColor: color.hex_code || "#d4d4d4" }}
+                        style={{
+                          backgroundColor: color.hex_code || "#d4d4d4",
+                          backgroundImage: (() => {
+                            const colorVariant = variants.find(
+                              (variant) =>
+                                variant.color?.id === color.id &&
+                                (variant.images?.[0] || variant.image),
+                            );
+                            const image =
+                              colorVariant?.images?.[0] || colorVariant?.image;
+                            return image ? `url(${image})` : undefined;
+                          })(),
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }}
                       />
                     </button>
                   ))}

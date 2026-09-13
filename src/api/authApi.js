@@ -69,6 +69,14 @@ export const isAuthenticated = () =>
   Boolean(
     localStorage.getItem("token") || localStorage.getItem("access_token"),
   );
+export const isAdminUser = (user) => {
+  const role = user?.role?.name || user?.role;
+  return Boolean(
+    user?.is_admin === true ||
+      user?.is_admin === 1 ||
+      String(role || "").toLowerCase() === "admin",
+  );
+};
 export const getStoredUser = () => {
   try {
     return JSON.parse(localStorage.getItem("user") || "null");

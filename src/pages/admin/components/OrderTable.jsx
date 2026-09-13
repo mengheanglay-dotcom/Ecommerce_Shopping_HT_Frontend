@@ -19,6 +19,7 @@ export default function OrderTable({ orders, onUpdate }) {
             value={order.status}
             onChange={(event) => onUpdate(order.id, event.target.value)}
           >
+            <option>Pending</option>
             <option>Processing</option>
             <option>Shipped</option>
             <option>Delivered</option>
