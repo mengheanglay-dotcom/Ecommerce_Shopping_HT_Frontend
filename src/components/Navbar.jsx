@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FiHeart,
@@ -10,17 +10,9 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import { getProducts } from "../api/productApi";
+import { getCategories } from "../api/categoryApi";
 import { getShopCart, getShopWishlist } from "../api/shopService";
 import { getStoredUser } from "../api/authApi";
-
-const readStoredArray = (key) => {
-  try {
-    const value = JSON.parse(localStorage.getItem(key) || "[]");
-    return Array.isArray(value) ? value : [];
-  } catch {
-    return [];
-  }
-};
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -28,6 +20,7 @@ export default function Navbar() {
   const [search, setSearch] = useState("");
   const [counts, setCounts] = useState({ cart: 0, wishlist: 0 });
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [user, setUser] = useState(getStoredUser());
   const results = products.filter(
     (p) =>
@@ -59,6 +52,7 @@ export default function Navbar() {
   };
   useEffect(() => {
     getProducts().then(setProducts).catch(console.error);
+    getCategories().then(setCategories).catch(console.error);
     refresh();
     window.addEventListener("storage", refresh);
     window.addEventListener("authchange", refresh);
@@ -67,6 +61,10 @@ export default function Navbar() {
       window.removeEventListener("authchange", refresh);
     };
   }, []);
+  const categoryChildren = (name) =>
+    categories.find(
+      (category) => category.name?.toLowerCase() === name.toLowerCase(),
+    )?.children || [];
 
   const close = () => setMenuOpen(false);
   const MenuLink = ({ to, children }) => (
@@ -99,30 +97,19 @@ export default function Navbar() {
                 MEN <FiChevronDown />
               </button>
               <div className="absolute left-1/2 -translate-x-1/2 top-8 pt-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <div className="w-[360px] p-6 rounded-2xl bg-white shadow-2xl border border-black/5 grid grid-cols-2 gap-5 normal-case tracking-normal text-sm">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-neutral-400 mb-3">
-                      Clothing
-                    </p>
-                    <MenuLink to="/Men_product">All</MenuLink>
-                    <MenuLink to="/Men_product?category=shirt">Shirts</MenuLink>
-                    <MenuLink to="/Men_product?category=hoodie">
-                      Hoodies
+                <div className="w-[440px] p-6 rounded-2xl bg-white shadow-2xl border border-black/5 normal-case tracking-normal text-sm grid grid-cols-2 gap-x-4 gap-y-1">
+                  <p className="col-span-2 text-xs uppercase tracking-widest text-neutral-400 mb-3">
+                    Categories
+                  </p>
+                  <MenuLink to="/Men_product">All</MenuLink>
+                  {categoryChildren("Men").map((category) => (
+                    <MenuLink
+                      key={category.id}
+                      to={`/Men_product?category=${encodeURIComponent(category.name)}`}
+                    >
+                      {category.name}
                     </MenuLink>
-                    <MenuLink to="/Men_product?category=pant">Pants</MenuLink>
-                    <MenuLink to="/Men_product?category=short">Shorts</MenuLink>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-neutral-400 mb-3">
-                      Shoes
-                    </p>
-                    <MenuLink to="/Men_product?category=Sneakers">
-                      Sneakers
-                    </MenuLink>
-                    <MenuLink to="/Men_product?category=Sandals">
-                      Sandals
-                    </MenuLink>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -131,39 +118,19 @@ export default function Navbar() {
                 WOMEN <FiChevronDown />
               </button>
               <div className="absolute left-1/2 -translate-x-1/2 top-8 pt-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                <div className="w-[360px] p-6 rounded-2xl bg-white shadow-2xl border border-black/5 grid grid-cols-2 gap-5 normal-case tracking-normal text-sm">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-neutral-400 mb-3">
-                      Clothing
-                    </p>
-                    <MenuLink to="/Women_product">All</MenuLink>
-                    <MenuLink to="/Women_product?category=dresses">
-                      Dresses
+                <div className="w-[440px] p-6 rounded-2xl bg-white shadow-2xl border border-black/5 normal-case tracking-normal text-sm grid grid-cols-2 gap-x-4 gap-y-1">
+                  <p className="col-span-2 text-xs uppercase tracking-widest text-neutral-400 mb-3">
+                    Categories
+                  </p>
+                  <MenuLink to="/Women_product">All</MenuLink>
+                  {categoryChildren("Women").map((category) => (
+                    <MenuLink
+                      key={category.id}
+                      to={`/Women_product?category=${encodeURIComponent(category.name)}`}
+                    >
+                      {category.name}
                     </MenuLink>
-                    <MenuLink to="/Women_product?category=hoodies">
-                      Hoodies
-                    </MenuLink>
-                    <MenuLink to="/Women_product?category=jeans">
-                      Jeans
-                    </MenuLink>
-                    <MenuLink to="/Women_product?category=shorts">
-                      Shorts
-                    </MenuLink>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-neutral-400 mb-3">
-                      Shoes
-                    </p>
-                    <MenuLink to="/Women_product?category=sneakers">
-                      Sneakers
-                    </MenuLink>
-                    <MenuLink to="/Women_product?category=sandals">
-                      Sandals
-                    </MenuLink>
-                    <MenuLink to="/Women_product?category=heels">
-                      Heels
-                    </MenuLink>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>

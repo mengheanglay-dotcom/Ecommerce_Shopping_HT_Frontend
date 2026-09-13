@@ -4,6 +4,9 @@ export default function FilterBar({
   categories = [],
   setCategory,
   category,
+  brands = [],
+  brand = "",
+  setBrand,
   search = "",
   setSearch,
 }) {
@@ -37,6 +40,26 @@ export default function FilterBar({
               </button>
             )}
           </label>
+          {brands.length > 0 && (
+            <label className="hidden items-center rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm focus-within:border-black sm:flex">
+              <span className="mr-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                Brand
+              </span>
+              <select
+                value={brand}
+                onChange={(event) => setBrand?.(event.target.value)}
+                className="max-w-32 bg-transparent text-sm outline-none"
+                aria-label="Filter by brand"
+              >
+                <option value="">All brands</option>
+                {brands.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
         <div className="hidden max-w-[55%] gap-2 overflow-x-auto no-scrollbar md:flex">
           {categories.map((c) => (
@@ -59,6 +82,24 @@ export default function FilterBar({
       </div>
       {open && (
         <div className="md:hidden px-5 pb-4 flex gap-2 overflow-x-auto no-scrollbar">
+          {brands.length > 0 && (
+            <label className="flex shrink-0 items-center rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-semibold">
+              <span className="mr-2 text-neutral-400">Brand</span>
+              <select
+                value={brand}
+                onChange={(event) => setBrand?.(event.target.value)}
+                className="max-w-28 bg-transparent outline-none"
+                aria-label="Filter by brand"
+              >
+                <option value="">All brands</option>
+                {brands.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           {categories.map((c) => (
             <button
               key={c}

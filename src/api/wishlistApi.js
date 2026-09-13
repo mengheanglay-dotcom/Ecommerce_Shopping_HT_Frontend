@@ -9,8 +9,8 @@ export const getWishlist = async () => {
     : payload?.products || payload?.items || payload?.wishlist || [];
   return items
     .map((item) => item.product || item)
-    .filter((item) => item?.id)
-    .map(normalizeProduct);
+    .map(normalizeProduct)
+    .filter((item) => item?.id);
 };
 
 export const addToWishlist = async (productId) => {

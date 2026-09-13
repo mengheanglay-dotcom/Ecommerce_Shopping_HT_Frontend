@@ -42,14 +42,14 @@ export const register = async ({
 };
 
 export const getCurrentUser = async () => {
-  const response = await api.get("/user");
+  const response = await api.get("/me");
   const user = unwrap(response)?.user || unwrap(response);
   localStorage.setItem("user", JSON.stringify(user));
   return user;
 };
 
 export const updateCurrentUser = async (data) => {
-  const response = await api.put("/user", data);
+  const response = await api.put("/me", data);
   const user = unwrap(response)?.user || unwrap(response);
   localStorage.setItem("user", JSON.stringify(user));
   return user;

@@ -10,8 +10,8 @@ Backend base URL: `https://pitipiw.online/api`
 - POST `/login`
 - POST `/register`
 - POST `/logout`
-- GET `/user`
-- PUT `/user`
+- GET `/me`
+- PUT `/me`
 - GET `/cart`
 - POST `/cart/items`
 - PUT ` /cart/items/{id}`
@@ -25,6 +25,8 @@ Backend base URL: `https://pitipiw.online/api`
 - GET `/orders/{id}`
 
 ## Admin endpoints used
+- GET `/admin/user`
+- PUT `/admin/user`
 - GET `/admin/dashboard`
 - GET `/admin/orders`
 - GET `/admin/orders/{id}`

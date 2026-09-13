@@ -11,6 +11,7 @@ import {
   removeFromWishlist as apiRemoveWish,
 } from "./wishlistApi";
 import { isAuthenticated } from "./authApi";
+import { getProductId, getProductById } from "./productApi";
 
 const read = (key) => {
   try {
@@ -28,24 +29,79 @@ const save = (key, value) => {
 export const getShopCart = async () =>
   isAuthenticated() ? apiGetCart() : read("cart");
 export const addShopCart = async (product, qty = 1, size = null) => {
-  if (isAuthenticated())
-    return apiAddCart({ product_id: product.id, quantity: qty, size });
-  const cart = read("cart");
-  const index = cart.findIndex((x) => x.id === product.id && x.size === size);
-  if (index >= 0)
-    cart[index] = { ...cart[index], qty: (cart[index].qty || 1) + qty };
-  else cart.push({ ...product, qty, size });
-  save("cart", cart);
-  return cart;
+  const productId = getProductId(product);
+  let source = product;
+  let variantId = Number(
+    source.variant_id ??
+      source.product_variant_id ??
+      source.variant?.id ??
+      source.variants?.[0]?.id ??
+      source.product_variants?.[0]?.id,
+  );
+  if (isAuthenticated() && (!Number.isInteger(variantId) || variantId <= 0)) {
+    source = await getProductById(productId);
+    variantId = Number(source.variants?.[0]?.id);
+  }
+  const variant = source.variants?.find(
+    (item) => Number(item.id) === variantId,
+  );
+  const defaultSize = size || source.size || variant?.size?.name || null;
+  const defaultColor =
+    source.color || variant?.color?.name || variant?.color || null;
+
+  if (!isAuthenticated()) {
+    const cart = read("cart");
+    const index = cart.findIndex(
+      (x) => getProductId(x) === productId && x.size === defaultSize,
+    );
+    if (index >= 0)
+      cart[index] = { ...cart[index], qty: (cart[index].qty || 1) + qty };
+    else
+      cart.push({
+        ...product,
+        qty,
+        quantity: qty,
+        size: defaultSize,
+        color: defaultColor,
+        variant_id: variantId,
+      });
+    save("cart", cart);
+    return cart;
+  }
+
+  if (!Number.isInteger(variantId) || variantId <= 0) {
+    throw new Error("This product has no purchasable variant.");
+  }
+
+  return apiAddCart({
+    product_id: productId,
+    quantity: qty,
+    size: defaultSize,
+    color: defaultColor,
+    variant_id: variantId,
+    product_variant_id: variantId,
+  });
 };
-export const updateShopCart = async (item, qty) => {
+export const updateShopCart = async (item, qty, variant = null) => {
   if (isAuthenticated())
-    return apiUpdateCart(item.id || item.cart_id, {
+    return apiUpdateCart(item.cart_id || item.id, {
       quantity: qty,
-      size: item.size,
+      size: variant?.size?.name || item.size,
+      color: variant?.color?.name || item.color,
+      variant_id: variant?.id || item.variant_id,
+      product_variant_id: variant?.id || item.variant_id,
     });
   const cart = read("cart").map((x) =>
-    x.id === item.id && x.size === item.size ? { ...x, qty } : x,
+    x.id === item.id && x.size === item.size
+      ? {
+          ...x,
+          qty,
+          quantity: qty,
+          size: variant?.size?.name || x.size,
+          color: variant?.color?.name || x.color,
+          variant_id: variant?.id || x.variant_id,
+        }
+      : x,
   );
   save("cart", cart);
   return cart;
@@ -65,24 +121,26 @@ export const clearShopCart = async () => {
 export const getShopWishlist = async () =>
   isAuthenticated() ? apiGetWish() : read("wishlist");
 export const toggleShopWishlist = async (product, exists) => {
+  const productId = getProductId(product);
   if (isAuthenticated()) {
-    if (exists) await apiRemoveWish(product.id);
-    else await apiAddWish(product.id);
+    if (exists) await apiRemoveWish(productId);
+    else await apiAddWish(productId);
     return getShopWishlist();
   }
   const current = read("wishlist");
   const next = exists
-    ? current.filter((x) => x.id !== product.id)
+    ? current.filter((x) => getProductId(x) !== productId)
     : [...current, product];
   save("wishlist", next);
   return next;
 };
 export const removeShopWishlist = async (product) => {
+  const productId = getProductId(product);
   if (isAuthenticated()) {
-    await apiRemoveWish(product.id);
+    await apiRemoveWish(productId);
     return getShopWishlist();
   }
-  const next = read("wishlist").filter((x) => x.id !== product.id);
+  const next = read("wishlist").filter((x) => getProductId(x) !== productId);
   save("wishlist", next);
   return next;
 };

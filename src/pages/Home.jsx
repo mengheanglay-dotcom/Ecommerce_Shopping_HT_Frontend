@@ -84,8 +84,9 @@ export default function Home() {
           />
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {apiBrands.map((brand) => (
-              <div
+              <Link
                 key={brand.id}
+                to={`/Men_product?brand=${encodeURIComponent(brand.id)}`}
                 className="flex h-36 items-center justify-center rounded-2xl border border-black/10 bg-neutral-50 p-5"
               >
                 <img
@@ -93,7 +94,7 @@ export default function Home() {
                   alt={brand.name}
                   className="h-full w-full object-contain"
                 />
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -141,18 +142,18 @@ export default function Home() {
         />
       </section> */}
       <section className="px-5 md:px-10 py-16">
-        <div className="rounded-[28px] bg-neutral-900 text-white p-8 md:p-14 flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="rounded-[28px] bg-neutral-900 p-8 md:p-14 flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div>
             <p className="text-xs tracking-[.25em] text-white/50 font-semibold">
               SHOP WITH CONFIDENCE
             </p>
-            <h2 className="text-3xl md:text-5xl font-semibold tracking-tight mt-3">
+            <h2 className="text-3xl md:text-5xl font-semibold tracking-tight mt-3 text-white ">
               Good style. Simple experience.
             </h2>
           </div>
           <Link
             to="/Men_product"
-            className="inline-flex items-center gap-3 bg-white text-black px-6 py-3.5 rounded-full font-semibold text-sm w-fit"
+            className="inline-flex items-center gap-3 bg-white px-6 py-3.5 rounded-full font-semibold text-sm w-fit"
           >
             Explore collection <FiArrowRight />
           </Link>

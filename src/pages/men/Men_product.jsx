@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "../../api/productApi";
 import { getCategories } from "../../api/categoryApi";
+import { getBrands } from "../../api/brandApi";
 import { Link, useLocation } from "react-router-dom";
 import FilterBar from "../../components/FilterBar";
 import ProductCard from "../../components/ProductCard";
@@ -13,32 +14,38 @@ import {
 function MenProduct() {
   const [products, setProducts] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [menCategoryIds, setMenCategoryIds] = useState([]);
   const [category, setCategory] = useState("all");
+  const [brand, setBrand] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
     const queryCategory = new URLSearchParams(location.search).get("category");
+    const queryBrand = new URLSearchParams(location.search).get("brand");
     setCategory(queryCategory || "all");
+    setBrand(queryBrand || "");
   }, [location.search]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const [data, categoryData] = await Promise.all([
+        const [data, categoryData, brandData] = await Promise.all([
           getProducts(),
           getCategories(),
+          getBrands(),
         ]);
         setProducts(data || []);
+        setBrands(Array.isArray(brandData) ? brandData : []);
         const menCategory = (categoryData || []).find(
           (item) => item.name.toLowerCase() === "men",
         );
+        const menChildren = menCategory?.children || [];
+        setMenCategoryIds(menChildren.map((item) => Number(item.id)));
         setCategoryOptions(
-          [
-            menCategory?.name,
-            ...(menCategory?.children || []).map((item) => item.name),
-          ].filter(Boolean),
+          menChildren.map((item) => item.name).filter(Boolean),
         );
       } catch (error) {
         console.error(error);
@@ -51,15 +58,27 @@ function MenProduct() {
 
   const categories = [
     "all",
-    ...new Set([
-      ...categoryOptions,
-      ...products.map((product) => product.category),
-    ]),
+    ...new Set(categoryOptions),
   ];
   const filteredProducts = products.filter((product) => {
+    const productCategoryId = Number(
+      product.category_id || product.category?.id,
+    );
+    const belongsToMen =
+      menCategoryIds.includes(productCategoryId) ||
+      (!menCategoryIds.length &&
+        categoryOptions.some(
+          (name) =>
+            String(product.category?.name || product.category || "")
+              .toLowerCase() === name.toLowerCase(),
+        ));
     const matchesCategory =
       category === "all" ||
       product.category.toLowerCase() === category.toLowerCase();
+    const matchesBrand =
+      !brand ||
+      String(product.brand_id || product.brand?.id) === brand ||
+      String(product.brand?.name || "").toLowerCase() === brand.toLowerCase();
     const query = search.trim().toLowerCase();
     const searchableText = [
       product.name,
@@ -70,7 +89,12 @@ function MenProduct() {
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
-    return matchesCategory && (!query || searchableText.includes(query));
+    return (
+      belongsToMen &&
+      matchesCategory &&
+      matchesBrand &&
+      (!query || searchableText.includes(query))
+    );
   });
 
   const [wishlist, setWishlist] = useState([]);
@@ -105,6 +129,19 @@ function MenProduct() {
         categories={categories}
         setCategory={setCategory}
         category={category}
+        brands={brands}
+        brand={brand}
+        setBrand={(value) => {
+          setBrand(value);
+          const params = new URLSearchParams(location.search);
+          if (value) params.set("brand", value);
+          else params.delete("brand");
+          window.history.replaceState(
+            {},
+            "",
+            `/Men_product${params.toString() ? `?${params}` : ""}`,
+          );
+        }}
         search={search}
         setSearch={setSearch}
       />
@@ -118,6 +155,28 @@ function MenProduct() {
           <>
             <span className="mx-2">/</span>
             <span className="font-medium text-black">{category}</span>
+          </>
+        )}
+        {brand && (
+          <>
+            <span className="mx-2">/</span>
+            <span className="font-medium text-black">
+              Brand{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  setBrand("");
+                  window.history.replaceState(
+                    {},
+                    "",
+                    `/Men_product${category !== "all" ? `?category=${encodeURIComponent(category)}` : ""}`,
+                  );
+                }}
+                className="ml-1 text-xs text-neutral-500 underline"
+              >
+                Clear
+              </button>
+            </span>
           </>
         )}
       </div>

@@ -73,7 +73,7 @@ export default function ProductCard({
             )}
           </button>
         </div>
-        <div className="absolute inset-x-3 bottom-3 flex gap-2 translate-y-16 group-hover:translate-y-0 transition-transform duration-300">
+        {/* <div className="absolute inset-x-3 bottom-3 flex gap-2 translate-y-16 group-hover:translate-y-0 transition-transform duration-300">
           <button
             onClick={() => add(p)}
             disabled={addingId === p.id}
@@ -89,12 +89,12 @@ export default function ProductCard({
               <FiEye />
             </Link>
           )}
-        </div>
+        </div> */}
       </div>
       <div className="pt-4">
         <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[.16em] text-neutral-400">
           <span>{p.brand?.name || "SHOP EDIT"}</span>
-          {p.variants?.length > 0 && <span>{p.variants.length} options</span>}
+          {p.variants?.length > 0 && <span>{p.variants.length} sizes</span>}
         </div>
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-medium text-sm md:text-[15px] leading-snug line-clamp-2">
@@ -117,7 +117,7 @@ export default function ProductCard({
             ))}
           </div>
         )}
-        <div className="flex items-center gap-1 mt-2 text-xs text-neutral-400">
+        {/* <div className="flex items-center gap-1 mt-2 text-xs text-neutral-400">
           {[1, 2, 3, 4, 5].map((n) => (
             <span
               key={n}
@@ -131,7 +131,7 @@ export default function ProductCard({
             </span>
           ))}
           <span className="ml-1">{p.rating?.rate || 0}</span>
-        </div>
+        </div> */}
       </div>
     </article>
   );

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { getProducts } from "../../api/productApi";
 import { getCategories } from "../../api/categoryApi";
+import { getBrands } from "../../api/brandApi";
 import FilterBar from "../../components/FilterBar";
 import ProductCard from "../../components/ProductCard";
 import {
@@ -14,11 +15,15 @@ function Women_product() {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const categoryFromURL = query.get("category") || "all";
+  const brandFromURL = query.get("brand") || "";
 
   const [category, setCategory] = useState(categoryFromURL);
+  const [brand, setBrand] = useState(brandFromURL);
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [womenCategoryIds, setWomenCategoryIds] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [wishlist, setWishlist] = useState([]);
@@ -42,24 +47,26 @@ function Women_product() {
 
   useEffect(() => {
     setCategory(categoryFromURL);
-  }, [categoryFromURL]);
+    setBrand(brandFromURL);
+  }, [categoryFromURL, brandFromURL]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const [data, categoryData] = await Promise.all([
+        const [data, categoryData, brandData] = await Promise.all([
           getProducts(),
           getCategories(),
+          getBrands(),
         ]);
         setProducts(data || []);
+        setBrands(Array.isArray(brandData) ? brandData : []);
         const womenCategory = (categoryData || []).find(
           (item) => item.name.toLowerCase() === "women",
         );
+        const womenChildren = womenCategory?.children || [];
+        setWomenCategoryIds(womenChildren.map((item) => Number(item.id)));
         setCategoryOptions(
-          [
-            womenCategory?.name,
-            ...(womenCategory?.children || []).map((item) => item.name),
-          ].filter(Boolean),
+          womenChildren.map((item) => item.name).filter(Boolean),
         );
       } catch (error) {
         console.error(error);
@@ -72,13 +79,28 @@ function Women_product() {
 
   const categories = [
     "all",
-    ...new Set([...categoryOptions, ...products.map((p) => p.category)]),
+    ...new Set(categoryOptions),
   ];
 
   const filteredProducts = products.filter((product) => {
+    const productCategoryId = Number(
+      product.category_id || product.category?.id,
+    );
+    const belongsToWomen =
+      womenCategoryIds.includes(productCategoryId) ||
+      (!womenCategoryIds.length &&
+        categoryOptions.some(
+          (name) =>
+            String(product.category?.name || product.category || "")
+              .toLowerCase() === name.toLowerCase(),
+        ));
     const matchesCategory =
       category === "all" ||
       product.category.toLowerCase() === category.toLowerCase();
+    const matchesBrand =
+      !brand ||
+      String(product.brand_id || product.brand?.id) === brand ||
+      String(product.brand?.name || "").toLowerCase() === brand.toLowerCase();
     const query = search.trim().toLowerCase();
     const searchableText = [
       product.name,
@@ -89,7 +111,12 @@ function Women_product() {
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
-    return matchesCategory && (!query || searchableText.includes(query));
+    return (
+      belongsToWomen &&
+      matchesCategory &&
+      matchesBrand &&
+      (!query || searchableText.includes(query))
+    );
   });
 
   return (
@@ -108,6 +135,19 @@ function Women_product() {
           categories={categories}
           setCategory={setCategory}
           category={category}
+          brands={brands}
+          brand={brand}
+          setBrand={(value) => {
+            setBrand(value);
+            const params = new URLSearchParams(location.search);
+            if (value) params.set("brand", value);
+            else params.delete("brand");
+            window.history.replaceState(
+              {},
+              "",
+              `/Women_product${params.toString() ? `?${params}` : ""}`,
+            );
+          }}
           search={search}
           setSearch={setSearch}
         />
@@ -125,6 +165,28 @@ function Women_product() {
               <span>/</span>
               <span className="text-black font-medium">
                 {category.charAt(0).toUpperCase() + category.slice(1)}
+              </span>
+            </>
+          )}
+          {brand && (
+            <>
+              <span>/</span>
+              <span className="text-black font-medium">
+                Brand{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBrand("");
+                    window.history.replaceState(
+                      {},
+                      "",
+                      `/Women_product${category !== "all" ? `?category=${encodeURIComponent(category)}` : ""}`,
+                    );
+                  }}
+                  className="ml-1 text-xs text-neutral-500 underline"
+                >
+                  Clear
+                </button>
               </span>
             </>
           )}

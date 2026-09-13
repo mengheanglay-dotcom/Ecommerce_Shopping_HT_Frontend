@@ -285,10 +285,20 @@ function ProductDetail() {
   }, [product]);
 
   const toggleWishlist = async (productToToggle = product) => {
-    const exists = wishlist.some((item) => item.id === productToToggle.id);
-    const next = await toggleShopWishlist(productToToggle, exists);
-    setWishlist(next || []);
-    addToast(exists ? "Removed from wishlist" : "Added to wishlist", "success");
+    try {
+      const exists = wishlist.some((item) => item.id === productToToggle.id);
+      const next = await toggleShopWishlist(productToToggle, exists);
+      setWishlist(next || []);
+      addToast(
+        exists ? "Removed from wishlist" : "Added to wishlist",
+        "success",
+      );
+    } catch (error) {
+      addToast(
+        error.response?.data?.message || error.message || "Unable to update wishlist.",
+        "error",
+      );
+    }
   };
 
   const addRelatedToCart = async (relatedProduct) => {
@@ -297,20 +307,27 @@ function ProductDetail() {
   };
 
   const addToCart = async () => {
-    const cartItem = {
-      ...product,
-      price: Number(selectedVariant?.price ?? product.price ?? 0),
-      category,
-      size: selectedVariant?.size?.name || selectedSize,
-      color: selectedVariant?.color?.name || selectedColor,
-      sku: selectedVariant?.sku,
-      variant_id: selectedVariant?.id,
-      stock: selectedVariant?.stock,
-      image: selectedVariant?.image || product.image,
-    };
-    await addShopCart(cartItem, quantity, cartItem.size);
-    window.dispatchEvent(new Event("storage"));
-    navigate("/cart");
+    try {
+      const cartItem = {
+        ...product,
+        price: Number(selectedVariant?.price ?? product.price ?? 0),
+        category,
+        size: selectedVariant?.size?.name || selectedSize,
+        color: selectedVariant?.color?.name || selectedColor,
+        sku: selectedVariant?.sku,
+        variant_id: selectedVariant?.id,
+        stock: selectedVariant?.stock,
+        image: selectedVariant?.image || product.image,
+      };
+      await addShopCart(cartItem, quantity, cartItem.size);
+      window.dispatchEvent(new Event("storage"));
+      navigate("/cart");
+    } catch (error) {
+      addToast(
+        error.response?.data?.message || error.message || "Unable to add this product to your bag.",
+        "error",
+      );
+    }
   };
 
   if (!product) {
@@ -318,6 +335,11 @@ function ProductDetail() {
   }
 
   const category = product.category?.name || product.category || "Product";
+  const catalogPath =
+    product.gender?.toLowerCase() === "women" ||
+    Number(product.category?.parent_id) === 5
+      ? "/Women_product"
+      : "/Men_product";
   const variants = product.variants || [];
   const colors = [
     ...new Map(
@@ -343,37 +365,33 @@ function ProductDetail() {
     variants.find((variant) => variant.size?.name === selectedSize) ||
     variants[0];
   const selectColor = (colorName) => {
-    setSelectedColor(colorName);
     const matchingVariant = variants.find(
       (variant) =>
         variant.color?.name === colorName &&
         variant.size?.name === selectedSize,
-    );
-    if (!matchingVariant) {
-      const firstColorVariant = variants.find(
-        (variant) => variant.color?.name === colorName,
+    ) || variants.find((variant) => variant.color?.name === colorName);
+    setSelectedColor(matchingVariant?.color?.name || colorName);
+    if (matchingVariant?.size?.name) setSelectedSize(matchingVariant.size.name);
+    if (matchingVariant?.stock !== undefined)
+      setQuantity((current) =>
+        Math.min(current, Math.max(0, Number(matchingVariant.stock))),
       );
-      if (firstColorVariant?.size?.name)
-        setSelectedSize(firstColorVariant.size.name);
-    }
   };
   const selectSize = (sizeName) => {
-    setSelectedSize(sizeName);
     const matchingVariant = variants.find(
       (variant) =>
         variant.size?.name === sizeName &&
         variant.color?.name === selectedColor,
-    );
-    if (!matchingVariant) {
-      const firstSizeVariant = variants.find(
-        (variant) => variant.size?.name === sizeName,
+    ) || variants.find((variant) => variant.size?.name === sizeName);
+    setSelectedSize(matchingVariant?.size?.name || sizeName);
+    if (matchingVariant?.color?.name) setSelectedColor(matchingVariant.color.name);
+    if (matchingVariant?.stock !== undefined)
+      setQuantity((current) =>
+        Math.min(current, Math.max(0, Number(matchingVariant.stock))),
       );
-      if (firstSizeVariant?.color?.name)
-        setSelectedColor(firstSizeVariant.color.name);
-    }
   };
   const price = Number(selectedVariant?.price ?? product.price ?? 0);
-  const stock = selectedVariant?.stock;
+  const stock = Number(selectedVariant?.stock);
   const isWishlisted = wishlist.some((item) => item.id === product.id);
 
   return (
@@ -397,7 +415,16 @@ function ProductDetail() {
                   className="h-6 w-12 object-contain"
                 />
               )}
-              <span>{product.brand?.name || "SHOP EDIT"}</span>
+              {product.brand?.id ? (
+                <Link
+                  to={`${catalogPath}?brand=${encodeURIComponent(product.brand.id)}`}
+                  className="hover:text-black hover:underline"
+                >
+                  {product.brand.name}
+                </Link>
+              ) : (
+                <span>{product.brand?.name || "SHOP EDIT"}</span>
+              )}
               <span className="text-neutral-300">/</span>
               <span>{category}</span>
             </div>
@@ -466,18 +493,25 @@ function ProductDetail() {
                 <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>
                   -
                 </button>
-                <span>{quantity}</span>
+                <span>
+                  {quantity}
+                  {Number.isFinite(stock) && stock > 0 && `/${stock}`}
+                </span>
                 <button
                   onClick={() =>
                     setQuantity(
-                      stock ? Math.min(stock, quantity + 1) : quantity + 1,
+                      Number.isFinite(stock)
+                        ? Math.min(stock, quantity + 1)
+                        : quantity + 1,
                     )
                   }
+                  disabled={Number.isFinite(stock) && (stock <= 0 || quantity >= stock)}
+                  className="disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   +
                 </button>
               </div>
-              {stock !== undefined && (
+              {Number.isFinite(stock) && (
                 <span
                   className={`text-sm ${stock > 0 ? "text-neutral-500" : "text-red-500"}`}
                 >
